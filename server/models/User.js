@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: 5,
   },
+  categories: {
+  type: [String],
+  default: ['Accommodation', 'Transport', 'Food', 'Sightseeing', 'Entertainment', 'Other'],
+}
 }, {
     timestamps: true,
 }
