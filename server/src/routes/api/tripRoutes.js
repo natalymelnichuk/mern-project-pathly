@@ -10,7 +10,7 @@ const {
     getTripById  
 } = require("../../controllers/tripController")
 const { authMiddleware } = require('../../utils/auth');
-// const { getActivityByTrip, createActivity } = require('../../controllers/activityController');
+const { getActivitiesByTrip, createActivity } = require('../../controllers/activityController');
 
 // Apply authMiddleware to all routes in this file
 router.use(authMiddleware);
@@ -31,14 +31,14 @@ router.delete('/:id', deleteTrip);
 // Get Single Trip
 router.get('/:id', getTripById);
 
-/*
+
 
 // GET /api/trips/:tripId/activity - Get all activities for a specific trip
-router.get('/:tripId/activity', getActivityByTrip);
+router.get('/:tripId/activity', getActivitiesByTrip);
 
 // POST /api/trips/:tripId/activity - Create a new activity for a specific trip
 router.post('/:tripId/activity', createActivity);
 
 
-*/
+
 module.exports = router;
