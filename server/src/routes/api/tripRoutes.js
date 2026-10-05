@@ -33,11 +33,11 @@ router.get('/:id', getTripById);
 
 
 
-// GET /api/trips/:tripId/activity - Get all activities for a specific trip
-router.get('/:tripId/activity', getActivitiesByTrip);
+// GET /api/trips/:tripId/activities - Get all activities for a specific trip
+router.get('/:tripId/activities', getActivitiesByTrip);
 
-// POST /api/trips/:tripId/activity - Create a new activity for a specific trip
-router.post('/:tripId/activity', createActivity);
+// POST /api/trips/:tripId/activities - Create a new activity for a specific trip
+router.post('/:tripId/activities', createActivity);
 
 
 
