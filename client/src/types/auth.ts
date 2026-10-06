@@ -3,6 +3,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
+    
 }
 
 export interface AuthContextType {
@@ -11,4 +12,9 @@ export interface AuthContextType {
     isAuthenticated: boolean;
     login: (token: string, user: User) => void;
     logout: () => void;
+}
+
+export interface AuthResponse {
+    token: string;
+    user: User;
 }

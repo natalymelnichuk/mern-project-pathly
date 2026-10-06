@@ -4,9 +4,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthProvider';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage'
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 
-const LoginPage = () => <div className="p-8 text-center text-xl">Login Page (In development)</div>;
-const RegisterPage = () => <div className="p-8 text-center text-xl">Register Page (In development)</div>;
 const DashboardPage = () => <div className="p-8 text-center text-xl font-bold">Dashboard (Protected Page)</div>;
 
 
