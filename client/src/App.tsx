@@ -6,10 +6,9 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage'
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { DashboardPage } from './pages/DashboardPage';
 
-const DashboardPage = () => <div className="p-8 text-center text-xl font-bold">Dashboard (Protected Page)</div>;
-
-
+const TripDetailPage = () => <div className="p-8 text-white">Trip Detail Page</div>;
 
 export const App: React.FC = () => {
   return (
@@ -24,9 +23,10 @@ export const App: React.FC = () => {
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/trips/:id" element={<TripDetailPage />} />
           </Route>
 
-          {/* Redirect for non-existent pages */}
+          {/* Redirect any unknown routes to the landing page */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 
