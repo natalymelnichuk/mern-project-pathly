@@ -19,7 +19,7 @@ export const LoginPage: React.FC = () => {
 
         try {
             // 1. Direct API call to the backend for login
-            const response = await API.post('/auth/login', { email, password });
+            const response = await API.post('/users/login', { email, password });
         
             // 2. Server - response.data with { token, user }
             const { token, user } = response.data;

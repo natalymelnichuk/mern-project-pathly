@@ -22,7 +22,7 @@ export const RegisterPage: React.FC = () => {
 
         try {
             // 1. Send a direct API request to the backend for registration
-            const response = await API.post('/auth/register', { name, email, password });
+            const response = await API.post('/users/register', { username: name, email, password });
             
             // 2. Extract the token and user object from the server response
             const { token, user } = response.data;
