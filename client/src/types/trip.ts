@@ -10,3 +10,4 @@ export interface Trip {
     createdAt?: string;
     updatedAt?: string;
 }
+

@@ -7,8 +7,8 @@ import { LandingPage } from './pages/LandingPage'
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { TripDetailPage } from './pages/TripDetailPage';
 
-const TripDetailPage = () => <div className="p-8 text-white">Trip Detail Page</div>;
 
 export const App: React.FC = () => {
   return (
