@@ -23,6 +23,8 @@ import type { Activity, ActivityStatus } from '../types/activity';
 import { useAuth } from '../hooks/useAuth';
 import { ManageCategoriesModal } from '../components/ManageCategModal';
 import { LogoutButton } from '../components/LogoutBtn';
+import { ActivityFilters } from '../components/ActivityFilter';
+import { useFilteredActivities } from '../hooks/useFilterActivities';
 
 
 export const TripDetailPage: React.FC = () => {
@@ -58,6 +60,15 @@ export const TripDetailPage: React.FC = () => {
     const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
     const [isEditActivityModalOpen, setIsEditActivityModalOpen] = useState(false);
 
+
+    // Filter 
+    const {
+        searchQuery,
+        setSearchQuery,
+        selectedCategory,
+        setSelectedCategory,
+        filteredActivities,
+    } = useFilteredActivities(activities);
     
     // Fetch trip and activities data when the component mounts or when the ID changes
     useEffect(() => {
@@ -328,6 +339,14 @@ export const TripDetailPage: React.FC = () => {
                     </div>
                 </div>
 
+                <ActivityFilters
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
+                    categories={categories} 
+                />
+
                 {/* Activities Section */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -335,7 +354,7 @@ export const TripDetailPage: React.FC = () => {
                             Itinerary Activities
                         </h2>
                         <div className="flex items-center gap-2">
-                            {/* ДОБАВЛЕНА НОВАЯ КНОПКА КАТЕГОРИЙ: */}
+                            {/*  */}
                             <button
                                 type="button"
                                 onClick={() => setIsCategoriesModalOpen(true)}
@@ -361,7 +380,7 @@ export const TripDetailPage: React.FC = () => {
                     {/* Grid of 3 columns */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {(['To Do', 'In Progress', 'Done'] as ActivityStatus[]).map((status) => {
-                            const columnActivities = activities.filter((act) => act.status === status);
+                            const columnActivities = filteredActivities.filter((act) => act.status === status);
 
                             return (
                                 <div

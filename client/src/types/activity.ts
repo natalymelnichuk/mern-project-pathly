@@ -21,3 +21,10 @@ export interface Activity {
     updatedAt?: string;
 }
 
+export interface ActivityFiltersProps {
+    searchQuery: string;
+    onSearchChange: (query: string) => void;
+    selectedCategory: string;
+    onCategoryChange: (category: string) => void;
+    categories: string[];
+}
