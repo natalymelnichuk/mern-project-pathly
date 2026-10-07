@@ -27,7 +27,7 @@ export const TripFilters: React.FC<TripFiltersProps> = ({
             </div>
 
             {/* Status Filter and Sort */}
-            <div className="flex  sm:flex-row items-center gap-6 w-full  justify-end">
+            <div className="flex flex-col sm:flex-row items-center gap-6 w-full  justify-end">
                 {/* Status Filter */}
                 <div className="flex items-center justify-center w-full sm:w-auto gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
                     <SlidersHorizontal className="w-4 h-4 text-slate-400 ml-2 hidden sm:block" />

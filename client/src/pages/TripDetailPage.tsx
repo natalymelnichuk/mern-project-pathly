@@ -25,6 +25,10 @@ import { ManageCategoriesModal } from '../components/ManageCategModal';
 import { LogoutButton } from '../components/LogoutBtn';
 import { ActivityFilters } from '../components/ActivityFilter';
 import { useFilteredActivities } from '../hooks/useFilterActivities';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import type { DropResult, DroppableProvided, DroppableStateSnapshot, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
+import { createPortal } from 'react-dom';
+
 
 
 export const TripDetailPage: React.FC = () => {
@@ -69,6 +73,36 @@ export const TripDetailPage: React.FC = () => {
         setSelectedCategory,
         filteredActivities,
     } = useFilteredActivities(activities);
+
+    // Handle drag and drop
+    const handleDragEnd = async (result: DropResult) => {
+        const { destination, source, draggableId } = result;
+
+        // If dropped outside a column or the status hasn't changed, we do nothing.
+        if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) {
+            return;
+        }
+
+        const newStatus = destination.droppableId as 'To Do' | 'In Progress' | 'Done';
+
+        // UI update (immediately updating local state for smooth animation)
+        setActivities((prevActivities) =>
+            prevActivities.map((act) =>
+                (act._id === draggableId || act._id === draggableId)
+                    ? { ...act, status: newStatus }
+                    : act
+            )
+        );
+
+        // Send data to the backend
+        try {
+            await API.put(`/activities/${draggableId}`, { status: newStatus });
+        } catch (error) {
+            console.error('Failed to update activity status:', error);
+            
+        }
+    };
+
     
     // Fetch trip and activities data when the component mounts or when the ID changes
     useEffect(() => {
@@ -378,112 +412,144 @@ export const TripDetailPage: React.FC = () => {
                     </div>
 
                     {/* Grid of 3 columns */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {(['To Do', 'In Progress', 'Done'] as ActivityStatus[]).map((status) => {
-                            const columnActivities = filteredActivities.filter((act) => act.status === status);
+                    <DragDropContext onDragEnd={handleDragEnd}>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {(['To Do', 'In Progress', 'Done'] as ActivityStatus[]).map((status) => {
+                                const columnActivities = filteredActivities.filter((act) => act.status === status);
 
-                            return (
-                                <div
-                                    key={status}
-                                    className="h-[500px] bg-white/40 dark:bg-slate-900/40 backdrop-blur-md border border-white/50 dark:border-slate-800 rounded-3xl p-4 flex flex-col shadow-lg"
-                                >
-                                    {/* Column Header */}
-                                    <div className="flex items-center justify-between mb-3 px-2 shrink-0">
-                                        <span className="font-bold text-sm text-slate-700 dark:text-slate-200 uppercase tracking-wider">
-                                            {status}
-                                        </span>
-                                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            {columnActivities.length}
-                                        </span>
-                                    </div>
-
-                                    {/* Scrollable Activities Container */}
-                                    <div className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-1 custom-scrollbar">
-                                        {columnActivities.length === 0 ? (
-                                            <div className="text-center py-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl text-xs text-slate-400">
-                                                No activities
-                                            </div>
-                                        ) : (
-                                            columnActivities.map((act) => (
-                                                <div
-                                                    key={act._id}
-                                                    className="p-4 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-white/60 dark:border-slate-700/60 shadow-md hover:shadow-lg transition-all space-y-3 shrink-0 group relative overflow-hidden"
-                                                >
-                                                    <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-emerald-500 via-teal-500 to-sky-500 rounded-l-2xl" />
-
-                                                    <div className="flex items-start justify-between gap-2 pl-1">
-                                                        <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100 line-clamp-2">
-                                                            {act.title}
-                                                        </h4>
-
-                                                        {/* Edit & Delete Buttons */}
-                                                        <div className="flex items-center gap-1 shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    setEditingActivity(act);
-                                                                    setIsEditActivityModalOpen(true);
-                                                                }}
-                                                                className="p-1 rounded-lg text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/80 dark:hover:bg-slate-700/80 transition-colors"
-                                                                title="Edit"
-                                                            >
-                                                                <Pencil className="w-3.5 h-3.5" />
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleDeleteActivity(act._id)}
-                                                                className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-white/80 dark:hover:bg-slate-700/80 transition-colors"
-                                                                title="Delete"
-                                                            >
-                                                                <Trash2 className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Category & Cost */}
-                                                    <div className="flex items-center justify-between text-xs pl-1">
-                                                        <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium">
-                                                            {act.category || 'Other'}
-                                                        </span>
-                                                        <span className="font-extrabold bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-lg text-amber-700 dark:text-amber-300">
-                                                            ${act.cost || 0}
-                                                        </span>
-                                                    </div>
-
-                                                    {/* Move Status Controls */}
-                                                    <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50 pl-1 flex items-center justify-between">
-                                                        <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                                                            <Calendar className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                                                            <span>
-                                                                {act.date ? new Date(act.date).toLocaleDateString() : 'No date'}
-                                                            </span>
-                                                        </div>
-                                                        <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                                                            Status
-                                                        </span>
-                                                        <select
-                                                            value={act.status}
-                                                            onChange={(e) =>
-                                                                handleMoveStatus(act, e.target.value as ActivityStatus)
-                                                            }
-                                                            className="px-2 py-1 rounded-xl bg-white/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none cursor-pointer transition-all"
-                                                        >
-                                                            <option value="To Do">To Do</option>
-                                                            <option value="In Progress">In Progress</option>
-                                                            <option value="Done">Done</option>
-                                                        </select>
-                                                    </div>
+                                return (
+                                    <Droppable key={status} droppableId={status}>
+                                        {(droppableProvided: DroppableProvided, droppableSnapshot: DroppableStateSnapshot) => (
+                                            <div
+                                                ref={droppableProvided.innerRef}
+                                                {...droppableProvided.droppableProps}
+                                                className={`h-[500px] border rounded-3xl p-4 flex flex-col shadow-lg ${
+                                                    droppableSnapshot.isDraggingOver
+                                                        ? 'bg-emerald-500/10 border-emerald-500/40'
+                                                        : 'bg-white/60 dark:bg-slate-900/80 border-slate-200 dark:border-slate-800'
+                                                }`}
+                                            >
+                                                {/* Header */}
+                                                <div className="flex items-center justify-between mb-3 px-2 shrink-0">
+                                                    <span className="font-bold text-sm text-slate-700 dark:text-slate-200 uppercase tracking-wider">
+                                                        {status}
+                                                    </span>
+                                                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                                        {columnActivities.length}
+                                                    </span>
                                                 </div>
-                                            ))
-                                        )}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
 
-            </div>
+                                                {/* Scrollable Container */}
+                                                <div className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-1 custom-scrollbar">
+                                                    {columnActivities.length === 0 ? (
+                                                        <div className="text-center py-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl text-xs text-slate-400">
+                                                            No activities
+                                                        </div>
+                                                    ) : (
+                                                        columnActivities.map((act, index) => (
+                                                            <Draggable
+                                                                key={act._id}
+                                                                draggableId={act._id}
+                                                                index={index}
+                                                            >
+                                                                {(draggableProvided: DraggableProvided, draggableSnapshot: DraggableStateSnapshot) => {
+                                                                    const usePortal = draggableSnapshot.isDragging;
+
+                                                                    const content = (
+                                                                        <div
+                                                                            ref={draggableProvided.innerRef}
+                                                                            {...draggableProvided.draggableProps}
+                                                                            {...draggableProvided.dragHandleProps}
+                                                                            style={{
+                                                                                ...draggableProvided.draggableProps.style,
+                                                                                // Фиксируем точное позиционирование при перетаскивании
+                                                                                boxSizing: 'border-box',
+                                                                            }}
+                                                                            className={`p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 space-y-3 shrink-0 group relative overflow-hidden ${
+                                                                                draggableSnapshot.isDragging
+                                                                                    ? 'shadow-2xl ring-2 ring-emerald-500/50 pointer-events-none'
+                                                                                    : 'hover:shadow-lg shadow-md'
+                                                                            }`}
+                                                                        >
+                                                                            <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-emerald-500 via-teal-500 to-sky-500 rounded-l-2xl" />
+
+                                                                            <div className="flex items-start justify-between gap-2 pl-1">
+                                                                                <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100 line-clamp-2">
+                                                                                    {act.title}
+                                                                                </h4>
+
+                                                                                <div className="flex items-center gap-1 shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        onClick={() => {
+                                                                                            setEditingActivity(act);
+                                                                                            setIsEditActivityModalOpen(true);
+                                                                                        }}
+                                                                                        className="p-1 rounded-lg text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/80 dark:hover:bg-slate-700/80 transition-colors"
+                                                                                        title="Edit"
+                                                                                    >
+                                                                                        <Pencil className="w-3.5 h-3.5" />
+                                                                                    </button>
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        onClick={() => handleDeleteActivity(act._id)}
+                                                                                        className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-white/80 dark:hover:bg-slate-700/80 transition-colors"
+                                                                                        title="Delete"
+                                                                                    >
+                                                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="flex items-center justify-between text-xs pl-1">
+                                                                                <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium">
+                                                                                    {act.category || 'Other'}
+                                                                                </span>
+                                                                                <span className="font-extrabold bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-lg text-amber-700 dark:text-amber-300">
+                                                                                    ${act.cost || 0}
+                                                                                </span>
+                                                                            </div>
+
+                                                                            <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50 pl-1 flex items-center justify-between">
+                                                                                <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                                                                                    <Calendar className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                                                                    <span>
+                                                                                        {act.date ? new Date(act.date).toLocaleDateString() : 'No date'}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <select
+                                                                                    value={act.status}
+                                                                                    onChange={(e) =>
+                                                                                        handleMoveStatus(act, e.target.value as ActivityStatus)
+                                                                                    }
+                                                                                    className="px-2 py-1 rounded-xl bg-white/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none cursor-pointer"
+                                                                                >
+                                                                                    <option value="To Do">To Do</option>
+                                                                                    <option value="In Progress">In Progress</option>
+                                                                                    <option value="Done">Done</option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+
+                                                                    if (usePortal) {
+                                                                        return createPortal(content, document.body);
+                                                                    }
+
+                                                                    return content;
+                                                                }}
+                                                            </Draggable>
+                                                        ))
+                                                    )}
+                                                    {droppableProvided.placeholder}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </Droppable>
+                                );
+                            })}
+                        </div>
+                    </DragDropContext>
 
             {/* --- Create Activity Modal --- */}
             {isActivityModalOpen && (
@@ -729,7 +795,10 @@ export const TripDetailPage: React.FC = () => {
                 onDeleteCategory={handleDeleteCategory}
             />
         </div>
-    );
+    </div>
+
+</div>    
+);
 };
 
 export default TripDetailPage;
