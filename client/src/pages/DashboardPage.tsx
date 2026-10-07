@@ -16,12 +16,24 @@ import { EditTripModal } from '../components/EditTripModal';
 import { CreateTripModal } from '../components/CreateTripModal'
 import type { Trip } from '../types/trip';
 import { LogoutButton } from '../components/LogoutBtn';
+import { TripFilters } from '../components/TripFilter';
+import { useFilteredTrips } from '../hooks/useFilteredTrips';
 
 
 export const DashboardPage: React.FC = () => {
 
     const [trips, setTrips] = useState<Trip[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const {
+        searchQuery,
+        setSearchQuery,
+        statusFilter,
+        setStatusFilter,
+        sortBy,
+        setSortBy,
+        filteredAndSortedTrips,
+    } = useFilteredTrips(trips);
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -115,6 +127,7 @@ export const DashboardPage: React.FC = () => {
                     </div>                   
                 </div>
 
+                
                 {/* Create new Trip Section */}
                 <div className="flex items-center gap-4">
                         
@@ -127,6 +140,17 @@ export const DashboardPage: React.FC = () => {
                             <span>Create New Trip</span>
                         </button>
                 </div>
+
+                <TripFilters
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    statusFilter={statusFilter}
+                    onStatusFilterChange={setStatusFilter}
+                    sortBy={sortBy}
+                    onSortByChange={setSortBy}
+                />
+
+
 
                 {/* Loading State */}
                 {loading ? (
@@ -155,7 +179,7 @@ export const DashboardPage: React.FC = () => {
                     ) : (
                 /* Grid with trip cards */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {trips.map((trip) => (
+                    {filteredAndSortedTrips.length > 0 ? (filteredAndSortedTrips.map((trip) => (
                     <Link
                         key={trip._id}
                         to={`/trips/${trip._id}`}
@@ -222,7 +246,14 @@ export const DashboardPage: React.FC = () => {
                             View Details
                         </div>
                     </Link>
-                ))}
+                )) 
+                ) : (
+                    <div className="col-span-full text-center py-12 bg-white/30 dark:bg-slate-900/30 backdrop-blur-md rounded-3xl border border-white/40 dark:border-slate-800">
+                            <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">
+                                No trips match your search or filter criteria.
+                            </p>
+                    </div>
+                )}
             </div>
         )}
         </div>
