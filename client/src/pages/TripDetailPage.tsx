@@ -383,11 +383,11 @@ export const TripDetailPage: React.FC = () => {
 
                 {/* Activities Section */}
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-[#132652] dark:text-[#F8FAFC]">
+                    <div className="flex  flex-col  gap-4 sm:w-auto sm:flex-row sm:mx-4 items-center justify-between">
+                        <h2 className="text-xl font-bold text-[#132652] dark:text-[#F8FAFC] sm:w-2/5">
                             Itinerary Activities
                         </h2>
-                        <div className="flex items-center gap-2">
+                        <div className="w-full flex justify-around sm:justify-end sm:gap-6 sm:w-2/5 items-center gap-2">
                             {/*  */}
                             <button
                                 type="button"
@@ -462,7 +462,7 @@ export const TripDetailPage: React.FC = () => {
                                                                             {...draggableProvided.dragHandleProps}
                                                                             style={{
                                                                                 ...draggableProvided.draggableProps.style,
-                                                                                // Фиксируем точное позиционирование при перетаскивании
+                                                                                
                                                                                 boxSizing: 'border-box',
                                                                             }}
                                                                             className={`p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 space-y-3 shrink-0 group relative overflow-hidden ${
