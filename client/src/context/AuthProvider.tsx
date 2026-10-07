@@ -24,10 +24,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
     };
 
+    const updateUser = (updatedUser: User) => {
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser)
+    }
+
     const isAuthenticated = !!token;
 
     return (
-        <AuthContext.Provider value={{ user, token, isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ user, token, isAuthenticated, login, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

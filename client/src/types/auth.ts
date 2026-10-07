@@ -12,6 +12,7 @@ export interface AuthContextType {
     isAuthenticated: boolean;
     login: (token: string, user: User) => void;
     logout: () => void;
+    updateUser: (updatedUser: User) => void;
 }
 
 export interface AuthResponse {

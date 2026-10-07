@@ -27,13 +27,13 @@ import { ManageCategoriesModal } from '../components/ManageCategModal';
 export const TripDetailPage: React.FC = () => {
     // Get the trip ID from the URL parameters
     const { id } = useParams<{ id: string }>();
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
 
     // Default categories if user profile doesn't have any yet
     const defaultCategories = ['Sightseeing', 'Food', 'Transport', 'Accommodation', 'Entertainment', 'Shopping'];
-    const [categories, setCategories] = useState<string[]>(() => {
-        return (user?.categories && user.categories.length > 0) ? user.categories : defaultCategories;
-    })
+    
+    const categories = user?.categories?.length ? user.categories : defaultCategories;
+    
 
     // Call states
     const [trip, setTrip] = useState<Trip | null>(null);
@@ -82,6 +82,7 @@ export const TripDetailPage: React.FC = () => {
             fetchTripAndActivities();
         }
     }, [id]);
+
 
     // Count totalBudget and remainingBudget based on activities
     const totalBudget = trip?.totalBudget || 0;
@@ -183,11 +184,11 @@ export const TripDetailPage: React.FC = () => {
         const updatedCategories = [...categories, newCategory.trim()];
 
         try {
-            const res = await API.put('users/profile', { categories: updatedCategories});
+            const res = await API.put('/users/profile', { categories: updatedCategories});
 
-            const updatedList = res.data.categories || updatedCategories;
-
-            setCategories(updatedList);
+            
+            const updatedUSer = res.data.user || res.data;
+            updateUser(updatedUSer);
 
         } catch (err) {
             console.error('Failed to add category to user profile', err);
@@ -202,7 +203,8 @@ export const TripDetailPage: React.FC = () => {
         try {
             const res = await API.put('/users/profile', { categories: filteredCategories});
             
-            setCategories(res.data.categories || filteredCategories);
+            const updatedUser = res.data.user || res.data;
+            updateUser(updatedUser);
         } catch (err) {
             console.error('Failed to delete category:', err);
         }
@@ -340,7 +342,9 @@ export const TripDetailPage: React.FC = () => {
 
                             <button
                                 type="button"
-                                onClick={() => setIsActivityModalOpen(true)}
+                                onClick={() => {
+                                    setNewCategory(categories[0] || 'Other');
+                                    setIsActivityModalOpen(true)}}
                                 className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-md transition-all"
                             >
                                 <Plus className="w-4 h-4" />
@@ -490,13 +494,13 @@ export const TripDetailPage: React.FC = () => {
                                         onChange={(e) => setNewCategory(e.target.value)}
                                         className="w-full px-3 py-2 rounded-2xl border border-slate-200 dark:border-slate-700/60 bg-white/50 dark:bg-slate-800/50 text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all cursor-pointer"
                                     >
-                                        <option value="" disabled>Select category</option>
+                                        {/* <option value="" disabled>Select category</option> */}
                                         {categories.map((cat: string) => (
-                                        <option key={cat} value={cat}>
-                                            {cat}
-                                        </option>
+                                            <option key={cat} value={cat}>
+                                                {cat}
+                                            </option>
                                         ))}
-                                        <option value="Other">Other</option>
+                                        {/* {!categories.includes('Other') && <option value="Other">Other</option>} */}
                                     </select>
                                 </div>
                                 <div>
@@ -604,10 +608,15 @@ export const TripDetailPage: React.FC = () => {
                                             {cat}
                                         </option>
                                         ))}
-                                        {!categories.includes(editingActivity.category) && editingActivity.category && (
-                                        <option value={editingActivity.category}>{editingActivity.category}</option>
+                                        {editingActivity.category &&
+                                            editingActivity.category !== 'Other' &&
+                                            !categories.includes(editingActivity.category) && (
+                                                <option value={editingActivity.category}>
+                                                    {editingActivity.category}
+                                                </option>
                                         )}
-                                        <option value="Other">Other</option>
+
+                                        
                                     </select>
                                 </div>
                                 <div>
