@@ -29,6 +29,7 @@ import { useFilteredActivities } from '../hooks/useFilterActivities';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult, DroppableProvided, DroppableStateSnapshot, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { createPortal } from 'react-dom';
+import toast from 'react-hot-toast';
 
 
 
@@ -86,7 +87,7 @@ export const TripDetailPage: React.FC = () => {
         }
 
         const newStatus = destination.droppableId as 'To Do' | 'In Progress' | 'Done';
-
+        const previousActivities = [...activities];
         // UI update (immediately updating local state for smooth animation)
         setActivities((prevActivities) =>
             prevActivities.map((act) =>
@@ -99,8 +100,12 @@ export const TripDetailPage: React.FC = () => {
         // Send data to the backend
         try {
             await API.put(`/activities/${draggableId}`, { status: newStatus });
+            toast.success(`Status updated to ${newStatus}`, { id: 'dnd-toast'})
         } catch (error) {
             console.error('Failed to update activity status:', error);
+
+            setActivities(previousActivities);
+            toast.error('Failed to save changes. Activity status rolled back.');
             
         }
     };
@@ -161,8 +166,10 @@ export const TripDetailPage: React.FC = () => {
                     Loading trip details...
                 </p>
             </div>
+
         );
-    }
+
+}
 
 
     // Function to handle the addition of a new activity
@@ -188,8 +195,12 @@ export const TripDetailPage: React.FC = () => {
             setNewCost('');
             setNewDate('');
             setIsActivityModalOpen(false);
+
+            toast.success('Activity created');
         } catch (err) {
-        console.error('Failed to create activity:', err);
+            console.error('Failed to create activity:', err);
+
+            toast.error('Something went wrong. Please try again.');
         }
     };
 
@@ -213,8 +224,12 @@ export const TripDetailPage: React.FC = () => {
         try {
             await API.delete(`/activities/${activityId}`);
             setActivities((prev) => prev.filter((act) => act._id !== activityId));
+
+            toast.success('Activity deleted');
         } catch (err) {
             console.error('Failed to delete activity:', err);
+
+            toast.error('Something went wrong. Please try again.');
         }
     };
 
@@ -230,8 +245,12 @@ export const TripDetailPage: React.FC = () => {
             );
             setIsEditActivityModalOpen(false);
             setEditingActivity(null);
+
+            toast.success('Activity saved successfully');
         } catch (err) {
             console.error('Failed to update activity:', err);
+
+            toast.error('Something went wrong. Please try again.');
         }
     };
 
