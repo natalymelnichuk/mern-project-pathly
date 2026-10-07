@@ -16,6 +16,7 @@ import {
     Loader2,
     Tag,
     Filter,
+    Map,
 } from 'lucide-react';
 import API from '../services/api';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -32,6 +33,7 @@ import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 import { MapPicker } from '../components/MapPicker';
 import type { ActivityLocation } from '../types/activity';
+import { TripMap } from '../components/TripMap';
 
 
 
@@ -69,6 +71,9 @@ export const TripDetailPage: React.FC = () => {
     // Editing state for activities
     const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
     const [isEditActivityModalOpen, setIsEditActivityModalOpen] = useState(false);
+
+    // Map view
+    const [showMap, setShowMap] = useState<boolean>(false);
 
 
     // Filter 
@@ -455,15 +460,35 @@ export const TripDetailPage: React.FC = () => {
                 </div>
 
 
+                <div> 
+                    <ActivityFilters
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        selectedCategory={selectedCategory}
+                        onCategoryChange={setSelectedCategory}
+                        categories={categories} 
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowMap((prev) => !prev)}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 hover:bg-white dark:hover:bg-slate-800 transition-all text-sm font-medium shadow-sm text-slate-700 dark:text-slate-200"
+                    >
+                        <Map className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        <span>{showMap ? 'Hide Map' : 'Show Map'}</span>
+                    </button>
+                </div>
 
+                {showMap && (
+                    <div className="mb-6 transition-all duration-300">
+                        <TripMap activities={filteredActivities} />
+                    </div>
+                )}
 
-                <ActivityFilters
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                    categories={categories} 
-                />
+                
+
+                
+
+                
 
                 {/* Activities Section */}
                 <div className="space-y-4">

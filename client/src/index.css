@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Кастомный стиль для попапов Leaflet в Pathly */
+.custom-trip-popup .leaflet-popup-content-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.custom-trip-popup .leaflet-popup-content {
+  margin: 0 !important;
+  line-height: inherit !important;
+}
+
+.custom-trip-popup .leaflet-popup-tip {
+  background-color: #ffffff;
+}
+
+.dark .custom-trip-popup .leaflet-popup-tip {
+  background-color: #0f172a; /* slate-900 для тёмной темы */
+}
