@@ -30,6 +30,9 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult, DroppableProvided, DroppableStateSnapshot, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
+import { MapPicker } from '../components/MapPicker';
+import type { ActivityLocation } from '../types/activity';
+
 
 
 
@@ -48,6 +51,7 @@ export const TripDetailPage: React.FC = () => {
     const [trip, setTrip] = useState<Trip | null>(null);
     const [activities, setActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activityLocation, setActivityLocation] = useState<ActivityLocation | undefined>(undefined);
 
 
     // Modals visibility
@@ -184,6 +188,7 @@ export const TripDetailPage: React.FC = () => {
                 cost: Number(newCost) || 0,
                 date: newDate || new Date().toISOString(),
                 status: newStatus,
+                location: activityLocation,
                 trip: id,
             });
 
@@ -194,6 +199,7 @@ export const TripDetailPage: React.FC = () => {
             setNewTitle('');
             setNewCost('');
             setNewDate('');
+            setActivityLocation(undefined);
             setIsActivityModalOpen(false);
 
             toast.success('Activity created');
@@ -238,13 +244,19 @@ export const TripDetailPage: React.FC = () => {
         e.preventDefault();
         if (!editingActivity) return;
 
+        const updatedActivity = {
+            ...editingActivity,
+            location: activityLocation,
+        };
+
         try {
-            const res = await API.put(`/activities/${editingActivity._id}`, editingActivity);
+            const res = await API.put(`/activities/${editingActivity._id}`, updatedActivity);
                 setActivities((prev) =>
                     prev.map((act) => (act._id === editingActivity._id ? res.data : act))
             );
             setIsEditActivityModalOpen(false);
             setEditingActivity(null);
+            setActivityLocation(undefined);
 
             toast.success('Activity saved successfully');
         } catch (err) {
@@ -555,6 +567,7 @@ export const TripDetailPage: React.FC = () => {
                                                                                         type="button"
                                                                                         onClick={() => {
                                                                                             setEditingActivity(act);
+                                                                                            setActivityLocation(act.location);
                                                                                             setIsEditActivityModalOpen(true);
                                                                                         }}
                                                                                         className="p-1 rounded-lg text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/80 dark:hover:bg-slate-700/80 transition-colors"
@@ -709,6 +722,16 @@ export const TripDetailPage: React.FC = () => {
                                 </div>
                             </div>
 
+                            <div className="space-y-1 mt-4">
+                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                                    Location on Map
+                                </label>
+                                <MapPicker
+                                    value={activityLocation}
+                                    onChange={(newLoc) => setActivityLocation(newLoc)}
+                                />
+                            </div>
+
                             <div className="flex items-center justify-end gap-2 pt-3">
                                 <button
                                     type="button"
@@ -725,7 +748,11 @@ export const TripDetailPage: React.FC = () => {
                                 </button>
                             </div>
                         </form>
+
+                        
                     </div>
+
+                    
                 </div>
             )}
 
@@ -831,6 +858,16 @@ export const TripDetailPage: React.FC = () => {
                                         <option value="Done">Done</option>
                                     </select>
                                 </div>
+                            </div>
+
+                            <div className="space-y-1 pt-2">
+                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                    Location on Map
+                                </label>
+                                <MapPicker
+                                    value={activityLocation}
+                                    onChange={(newLoc) => setActivityLocation(newLoc)}
+                                />
                             </div>
                             
 
