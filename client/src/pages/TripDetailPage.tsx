@@ -22,6 +22,7 @@ import type { Trip } from '../types/trip';
 import type { Activity, ActivityStatus } from '../types/activity';
 import { useAuth } from '../hooks/useAuth';
 import { ManageCategoriesModal } from '../components/ManageCategModal';
+import { LogoutButton } from '../components/LogoutBtn';
 
 
 export const TripDetailPage: React.FC = () => {
@@ -234,7 +235,11 @@ export const TripDetailPage: React.FC = () => {
                         <ArrowLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         Back to Dashboard
                     </Link>
-                    <ThemeToggle />
+                    <div className='flex items-center gap-4'>
+                        <ThemeToggle />
+                        <LogoutButton />
+                    </div>
+                    
                 </div>
 
                 {/* Trip Header */}

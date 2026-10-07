@@ -15,6 +15,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { EditTripModal } from '../components/EditTripModal';
 import { CreateTripModal } from '../components/CreateTripModal'
 import type { Trip } from '../types/trip';
+import { LogoutButton } from '../components/LogoutBtn';
 
 
 export const DashboardPage: React.FC = () => {
@@ -98,7 +99,7 @@ export const DashboardPage: React.FC = () => {
             <div className="max-w-7xl mx-auto space-y-8">
             
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex justify-between gap-2">
                     <div>
                         <h1 className="text-3xl sm:text-4xl font-extrabold text-[#132652] dark:text-[#F8FAFC] tracking-tight">
                             My Trips
@@ -107,9 +108,16 @@ export const DashboardPage: React.FC = () => {
                             Manage your upcoming travel plans and itineraries.
                         </p>
                     </div>
-
-                    <div className="flex items-center gap-4">
+                    <div className='flex items-center gap-4'> 
                         <ThemeToggle />
+
+                        <LogoutButton />
+                    </div>                   
+                </div>
+
+                {/* Create new Trip Section */}
+                <div className="flex items-center gap-4">
+                        
                         <button
                             type="button"
                             onClick={() => setIsCreateModalOpen(true)}
@@ -118,7 +126,6 @@ export const DashboardPage: React.FC = () => {
                             <Plus className="w-5 h-5" />
                             <span>Create New Trip</span>
                         </button>
-                    </div>
                 </div>
 
                 {/* Loading State */}
