@@ -15,6 +15,7 @@ import {
     Receipt,
     Loader2,
     Tag,
+    Filter,
 } from 'lucide-react';
 import API from '../services/api';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -73,6 +74,7 @@ export const TripDetailPage: React.FC = () => {
         setSelectedCategory,
         filteredActivities,
     } = useFilteredActivities(activities);
+
 
     // Handle drag and drop
     const handleDragEnd = async (result: DropResult) => {
@@ -134,6 +136,16 @@ export const TripDetailPage: React.FC = () => {
     const totalBudget = trip?.totalBudget || 0;
     const spentBudget = activities.reduce((sum, activity) => sum + (activity.cost || 0), 0);
     const remainingBudget = totalBudget - spentBudget;
+
+    const filteredActivitiesBudget = filteredActivities.reduce(
+        (sum, act) => sum + (Number(act.cost) || 0), 0
+    )
+
+    const budgetUsagePercent = totalBudget > 0
+        ? Math.min(Math.round((spentBudget / totalBudget) * 100), 100)
+        : 0;
+
+    const isOverBudget = totalBudget > 0 && spentBudget > totalBudget
 
 
     if (loading) {
@@ -311,21 +323,44 @@ export const TripDetailPage: React.FC = () => {
                     </div>
 
                     {/* Financial Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
                         
                         {/* Total Budget */}
-                        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
-                                    Total Budget
-                                </p>
-                                <p className="text-2xl font-extrabold text-emerald-800 dark:text-emerald-200 mt-1">
-                                    ${trip.totalBudget?.toLocaleString() || 0}
-                                </p>
+                        <div className="flex-col p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+                            <div className="p-4 rounded-2xl flex items-center justify-between">
+                                <div>
+                                    <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
+                                        Total Budget
+                                    </p>
+                                    <p className="text-2xl font-extrabold text-emerald-800 dark:text-emerald-200 mt-1">
+                                        ${trip.totalBudget?.toLocaleString() || 0}
+                                    </p>
+                                </div>
+                                <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-300">
+                                    <Wallet className="w-6 h-6" />
+                                </div>
                             </div>
-                            <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-300">
-                                <Wallet className="w-6 h-6" />
-                            </div>
+                            {/* Progress bar */}
+                            {totalBudget > 0 && (
+                                <div className="mt-3">
+                                    <div className="flex justify-between text-[11px] font-medium mb-1">
+                                        <span className={isOverBudget ? 'text-rose-500 font-bold' : 'text-slate-500'}>
+                                            {isOverBudget ? 'Over budget!' : `${budgetUsagePercent}% spent`}
+                                        </span>
+                                        <span className="text-slate-400">
+                                            ${spentBudget.toLocaleString()} /${totalBudget.toLocaleString()}
+                                        </span>
+                                    </div>
+                                    <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full transition-all duration-500 ${
+                                                isOverBudget ? 'bg-rose-500' : 'bg-emerald-500'
+                                            }`}
+                                            style={{ width: `${budgetUsagePercent}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Spent budget according to the activities */}
@@ -370,8 +405,26 @@ export const TripDetailPage: React.FC = () => {
                             </div>
                         </div>
 
+                        {/* Filtered Cost */}
+                        <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-between">
+                            <div>
+                                <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
+                                    Filtered Total
+                                </p>
+                                <p className="text-2xl font-extrabold text-purple-800 dark:text-purple-200 mt-1">
+                                    ${filteredActivitiesBudget.toLocaleString()}
+                                </p>
+                            </div>
+                            <div className="p-3 rounded-2xl bg-purple-500/20 text-purple-600 dark:text-purple-300">
+                                <Filter className="w-6 h-6" />
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+
+
+
 
                 <ActivityFilters
                     searchQuery={searchQuery}
