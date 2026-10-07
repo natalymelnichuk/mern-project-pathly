@@ -3,7 +3,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
-    
+    categories: string[];
 }
 
 export interface AuthContextType {

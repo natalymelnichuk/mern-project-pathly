@@ -36,7 +36,7 @@ async function loginUser(req, res) {
     }
 };
 
-// Get /api/users/me - Get the authenticated user's information
+// Get /api/users/profile - Get the authenticated user's information
 async function getUser(req, res) {
     try {
         const user = await User.findById(req.user._id).select('-password');
@@ -49,9 +49,32 @@ async function getUser(req, res) {
     }
 }
 
+// PUT /api/users/profile — Update user profile
+async function updateUser(req, res) {
+    try {
+        const { categories } = req.body;
+
+        
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { categories },
+            { returnDocument: 'after' }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+}
+
 
 module.exports = {
     registerUser,
     loginUser,
-    getUser
+    getUser,
+    updateUser,
 };
