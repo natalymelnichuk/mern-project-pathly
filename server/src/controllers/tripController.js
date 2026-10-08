@@ -46,7 +46,7 @@ async function updateTrip (req, res) {
         const updatedTrip = await Trip.findByIdAndUpdate(
             req.params.id,
             req.body,
-            { new: true, runValidators: true}
+            { returnDocument: 'after', runValidators: true}
         )
         res.json(updatedTrip);
     } catch (err) {

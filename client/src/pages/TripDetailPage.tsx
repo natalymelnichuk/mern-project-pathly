@@ -480,7 +480,7 @@ export const TripDetailPage: React.FC = () => {
 
                 {showMap && (
                     <div className="mb-6 transition-all duration-300">
-                        <TripMap activities={filteredActivities} />
+                        <TripMap activities={filteredActivities} destination={trip?.destination} />
                     </div>
                 )}
 
@@ -532,7 +532,7 @@ export const TripDetailPage: React.FC = () => {
                                             <div
                                                 ref={droppableProvided.innerRef}
                                                 {...droppableProvided.droppableProps}
-                                                className={`h-[500px] border rounded-3xl p-4 flex flex-col shadow-lg ${
+                                                className={`h-[350px] sm:h-[500px] border rounded-3xl p-4 flex flex-col shadow-lg ${
                                                     droppableSnapshot.isDraggingOver
                                                         ? 'bg-emerald-500/10 border-emerald-500/40'
                                                         : 'bg-white/60 dark:bg-slate-900/80 border-slate-200 dark:border-slate-800'
