@@ -91,16 +91,20 @@ export const TripDetailPage: React.FC = () => {
     // Handle open Modal
     const handleOpenAddModal = () => {
         setNewCategory(categories[0] || 'Other');
-        
-        // Передаем название города из назначения поездки
-        if (trip?.destination) {
-            setActivityLocation({ name: trip.destination });
-        } else {
-            setActivityLocation(undefined);
-        }
-
+        setActivityLocation(undefined);
         setIsActivityModalOpen(true);
-    };
+    //     setNewCategory(categories[0] || 'Other');
+        
+    //     // Передаем название города из назначения поездки
+    //     if (trip?.destination) {
+    //         setActivityLocation({ name: trip.destination });
+    //     } else {
+    //         setActivityLocation(undefined);
+    //     }
+
+    //     setIsActivityModalOpen(true);
+    // 
+};
 
     // Handle drag and drop
     const handleDragEnd = async (result: DropResult) => {
@@ -527,8 +531,6 @@ export const TripDetailPage: React.FC = () => {
                                 type="button"
                                 onClick={() => {
                                     handleOpenAddModal()
-                                    setNewCategory(categories[0] || 'Other');
-                                    setIsActivityModalOpen(true) 
                                     }}
                                 className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-md transition-all"
                             >
@@ -770,7 +772,7 @@ export const TripDetailPage: React.FC = () => {
                                     Location on Map
                                 </label>
                                 <MapPicker
-                                    
+                                    defaultLocation={trip.destination}
                                     value={activityLocation}
                                     onChange={(newLoc) => setActivityLocation(newLoc)}
                                 />
@@ -910,6 +912,7 @@ export const TripDetailPage: React.FC = () => {
                                 </label>
                                 <MapPicker
                                     value={activityLocation}
+                                    defaultLocation={trip.destination}
                                     onChange={(newLoc) => setActivityLocation(newLoc)}
                                 />
                             </div>
@@ -919,6 +922,7 @@ export const TripDetailPage: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={() => {
+                                        setActivityLocation(undefined);
                                         setIsEditActivityModalOpen(false);
                                         setEditingActivity(null);
                                     }}
