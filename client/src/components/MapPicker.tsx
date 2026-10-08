@@ -41,81 +41,81 @@ interface SearchResult {
 const MapController: React.FC<{
     activityPosition: [number, number] | null;
     defaultLocation?: string;
-}> = ({ activityPosition, defaultLocation }) => {
-    const map = useMap();
+    }> = ({ activityPosition, defaultLocation }) => {
+        const map = useMap();
 
-    useEffect(() => {
-        let cancelled = false;
+        useEffect(() => {
+            let cancelled = false;
 
-        const centerMap = async () => {
-            // Existing activity location has priority.
-            if (activityPosition) {
-                map.setView(activityPosition, 14, {
-                    animate: true,
-                });
-                return;
-            }
+            const centerMap = async () => {
+                // Existing activity location has priority.
+                if (activityPosition) {
+                    map.setView(activityPosition, 14, {
+                        animate: true,
+                    });
+                    return;
+                }
 
-            // No activity coordinates — use trip destination.
-            if (!defaultLocation?.trim()) {
-                return;
-            }
+                // No activity coordinates — use trip destination.
+                if (!defaultLocation?.trim()) {
+                    return;
+                }
 
-            try {
-                const response = await fetch(
-                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-                        defaultLocation.trim()
-                    )}&limit=1`,
-                    {
-                        headers: {
-                            'Accept-Language': 'en',
-                        },
+                try {
+                    const response = await fetch(
+                        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+                            defaultLocation.trim()
+                        )}&limit=1`,
+                        {
+                            headers: {
+                                'Accept-Language': 'en',
+                            },
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(
+                            `Geocoding request failed: ${response.status}`
+                        );
                     }
-                );
 
-                if (!response.ok) {
-                    throw new Error(
-                        `Geocoding request failed: ${response.status}`
-                    );
+                    const data = await response.json();
+
+                    if (cancelled || !data?.[0]) {
+                        return;
+                    }
+
+                    const lat = parseFloat(data[0].lat);
+                    const lng = parseFloat(data[0].lon);
+
+                    if (
+                        Number.isNaN(lat) ||
+                        Number.isNaN(lng)
+                    ) {
+                        return;
+                    }
+
+                    map.setView([lat, lng], 12, {
+                        animate: true,
+                    });
+                } catch (error) {
+                    if (!cancelled) {
+                        console.error(
+                            'Failed to geocode default location:',
+                            error
+                        );
+                    }
                 }
+            };
 
-                const data = await response.json();
+            centerMap();
 
-                if (cancelled || !data?.[0]) {
-                    return;
-                }
+            return () => {
+                cancelled = true;
+            };
+        }, [activityPosition, defaultLocation, map]);
 
-                const lat = parseFloat(data[0].lat);
-                const lng = parseFloat(data[0].lon);
-
-                if (
-                    Number.isNaN(lat) ||
-                    Number.isNaN(lng)
-                ) {
-                    return;
-                }
-
-                map.setView([lat, lng], 12, {
-                    animate: true,
-                });
-            } catch (error) {
-                if (!cancelled) {
-                    console.error(
-                        'Failed to geocode default location:',
-                        error
-                    );
-                }
-            }
-        };
-
-        centerMap();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [activityPosition, defaultLocation, map]);
-
-    return null;
+        return null;
 };
 
 /**
