@@ -95,7 +95,7 @@ export const TripDetailPage: React.FC = () => {
         setIsActivityModalOpen(true);
     //     setNewCategory(categories[0] || 'Other');
         
-    //     // Передаем название города из назначения поездки
+
     //     if (trip?.destination) {
     //         setActivityLocation({ name: trip.destination });
     //     } else {
@@ -197,8 +197,7 @@ export const TripDetailPage: React.FC = () => {
             </div>
 
         );
-
-}
+    }
 
 
     // Function to handle the addition of a new activity

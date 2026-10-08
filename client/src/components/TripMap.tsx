@@ -96,7 +96,28 @@ export const TripMap: React.FC<TripMapProps> = ({ activities, destination }) => 
                 {activitiesWithLocation.map((act) => (
                     <Marker key={act._id} position={[act.location!.lat!, act.location!.lng!]}>
                         <Popup minWidth={220} className="custom-trip-popup">
-                            
+                            <div className="space-y-2 bg-white/60 dark:bg-slate-900/80 rounded-xl text-slate-800 p-4">
+                                
+                                <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100 border-b border-slate-100 dark:border-slate-800 pb-1">
+                                    {act.title}
+                                </h4>
+
+                                
+                                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2">
+                                    {act.category && (
+                                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 font-medium">
+                                            {act.category}
+                                        </span>
+                                    )}
+                                    {act.date && (
+                                        <span>
+                                            {new Date(act.date).toLocaleDateString()}
+                                        </span>
+                                    )}
+                                </div>
+
+                    
+                            </div>
                         </Popup>
                     </Marker>
                 ))}
