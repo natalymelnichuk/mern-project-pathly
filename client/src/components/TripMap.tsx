@@ -79,7 +79,7 @@ export const TripMap: React.FC<TripMapProps> = ({ activities, destination }) => 
             <MapContainer
                 center={points.length > 0 ? points[0] : destinationCenter}
                 zoom={11}
-                scrollWheelZoom={false} // Защита от случайного скролла (см. пункт 3)
+                scrollWheelZoom={false} 
                 className="h-full w-full"
             >
                 <TileLayer
@@ -96,7 +96,7 @@ export const TripMap: React.FC<TripMapProps> = ({ activities, destination }) => 
                 {activitiesWithLocation.map((act) => (
                     <Marker key={act._id} position={[act.location!.lat!, act.location!.lng!]}>
                         <Popup minWidth={220} className="custom-trip-popup">
-                            {/* Наш стилизованный попап */}
+                            
                         </Popup>
                     </Marker>
                 ))}

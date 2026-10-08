@@ -7,7 +7,6 @@ import {
     Plus,
     MapPin,
     Calendar,
-    // DollarSign,
     Pencil,
     Trash2,
     Wallet,
@@ -36,7 +35,10 @@ import type { ActivityLocation } from '../types/activity';
 import { TripMap } from '../components/TripMap';
 
 
-
+//
+//
+//
+//
 
 export const TripDetailPage: React.FC = () => {
     // Get the trip ID from the URL parameters
@@ -85,6 +87,20 @@ export const TripDetailPage: React.FC = () => {
         filteredActivities,
     } = useFilteredActivities(activities);
 
+
+    // Handle open Modal
+    const handleOpenAddModal = () => {
+        setNewCategory(categories[0] || 'Other');
+        
+        // Передаем название города из назначения поездки
+        if (trip?.destination) {
+            setActivityLocation({ name: trip.destination });
+        } else {
+            setActivityLocation(undefined);
+        }
+
+        setIsActivityModalOpen(true);
+    };
 
     // Handle drag and drop
     const handleDragEnd = async (result: DropResult) => {
@@ -510,8 +526,10 @@ export const TripDetailPage: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={() => {
+                                    handleOpenAddModal()
                                     setNewCategory(categories[0] || 'Other');
-                                    setIsActivityModalOpen(true)}}
+                                    setIsActivityModalOpen(true) 
+                                    }}
                                 className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-md transition-all"
                             >
                                 <Plus className="w-4 h-4" />
@@ -752,6 +770,7 @@ export const TripDetailPage: React.FC = () => {
                                     Location on Map
                                 </label>
                                 <MapPicker
+                                    
                                     value={activityLocation}
                                     onChange={(newLoc) => setActivityLocation(newLoc)}
                                 />

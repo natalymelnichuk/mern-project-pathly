@@ -15,7 +15,7 @@ interface SearchResult {
     lon: string;
 }
 
-// Компонент для плавной центровки карты
+// Component to recenter map
 const RecenterMap: React.FC<{ lat: number; lng: number }> = ({ lat, lng }) => {
     const map = useMap();
     useEffect(() => {
@@ -26,7 +26,7 @@ const RecenterMap: React.FC<{ lat: number; lng: number }> = ({ lat, lng }) => {
     return null;
 };
 
-// Компонент для клика по карте
+// Component to click on the map
 const LocationMarker: React.FC<{
     position: [number, number] | null;
     setPosition: (pos: [number, number]) => void;
@@ -46,7 +46,7 @@ const LocationMarker: React.FC<{
 export const MapPicker: React.FC<MapPickerProps> = ({ value, onChange }) => {
     const defaultCenter: [number, number] = value?.lat && value?.lng 
         ? [value.lat, value.lng] 
-        : [48.8566, 2.3522]; // Париж по умолчанию
+        : [48.8566, 2.3522]; 
 
     const [markerPos, setMarkerPos] = useState<[number, number] | null>(
         value?.lat && value?.lng ? [value.lat, value.lng] : null
@@ -58,7 +58,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({ value, onChange }) => {
     
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // 1. При обновлении `value` (например, при вызове модалки редактирования) подставляем название
+    // 1. With update of `value` set the title
     useEffect(() => {
         let isMounted = true;
         
@@ -83,7 +83,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({ value, onChange }) => {
         };
     }, [value]);
 
-    // Закрываем выпадающий список при клике вне его
+    // Close the list with click on it
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -94,7 +94,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({ value, onChange }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // 2. Поиск вариантов по OpenStreetMap Nominatim API
+    // 2. Search with OpenStreetMap Nominatim API
     const handleSearch = async () => {
         if (!searchQuery.trim()) return;
 
@@ -120,12 +120,12 @@ export const MapPicker: React.FC<MapPickerProps> = ({ value, onChange }) => {
         }
     };
 
-    // Выбор локации из выпадающего списка
+    // Choose location from the list
     const handleSelectResult = (result: SearchResult) => {
         const lat = parseFloat(result.lat);
         const lng = parseFloat(result.lon);
         
-        // Берем короткое название до первой запятой для красивого отображения
+        // Take the short name
         const shortName = result.display_name.split(',')[0] || searchQuery;
 
         setMarkerPos([lat, lng]);
@@ -139,7 +139,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({ value, onChange }) => {
         });
     };
 
-    // Выбор локации по клику прямо на карте
+    // Choose location with the click on the map
     const handleMapClick = (lat: number, lng: number) => {
         const locationName = searchQuery || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
         onChange({
@@ -180,7 +180,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({ value, onChange }) => {
                     </button>
                 </div>
 
-                {/* Выпадающий список совпадений */}
+                {/* Dropdown List */}
                 {showDropdown && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
                         {searchResults.length > 0 ? (

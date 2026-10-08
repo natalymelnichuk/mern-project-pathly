@@ -1,5 +1,5 @@
 
-// Превращает "Summer Vacation in Rome!" -> "summer-vacation-in-rome"
+// "Summer Vacation in Rome!" -> "summer-vacation-in-rome"
 export const slugify = (text: string): string => {
     return text
         .toString()
